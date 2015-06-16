@@ -38,7 +38,7 @@ public class ActionPotential_Analyzer implements Serializable{
     public void action_potential_analysis_all_trains(@ParamInfo(name = "Array of spike trains")ArrayList<AP_Traces> spiketrains, 
             @ParamInfo(name = "Threshold [mV]")double threshold, 
             @ParamInfo(name = "Resting potential [mV]")double restingpot, 
-            @ParamInfo(name = "Method number")int ap_method, 
+            @ParamInfo(name ="Method to calculate AP width", style="selection", options="value=[\"threshold\", \"mean_spike_height\"]")String ap_method, 
             @ParamInfo(name = "Output file name")String outFileName) throws IOException{
         
         File outfile = new File(outFileName);
@@ -74,12 +74,10 @@ public class ActionPotential_Analyzer implements Serializable{
                 double amplitude = amp.getAmplitude();
                 double ap_width = 0;
                 
-                if(ap_method == 1){    
+                if(ap_method.equals("threshold")){    
                     ap_width = sd.calc_APwidth_THRESH(threshold, voltage_trace, time_trace);
-                }else if(ap_method == 2){
+                }else if(ap_method.equals("mean_spike_height")){
                     ap_width = sd.calc_APwidth_MSH(voltage_trace, time_trace, threshold);
-                }else{
-                    throw new IOException("Error: The chosen method nr. "+ap_method+" is no method to calculate the action potential width!");             
                 }
 
                 write_to_textfile(outfile, file_number, event_number, amplitude, ap_width);
