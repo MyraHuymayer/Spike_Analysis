@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class ActionPotential_Analyzer implements Serializable{
     
     private static final long serialVersionUID = 1L;
-    
+    private double mean_ap_width; 
         
    //was wollen wir uns ausgeben lassen? 
     /**
@@ -43,6 +43,8 @@ public class ActionPotential_Analyzer implements Serializable{
         
         File outfile = new File(outFileName);
         
+        mean_ap_width = 0;
+        int all_events = 0;
         try{
             FileOutputStream is = new FileOutputStream(outfile);
             OutputStreamWriter osw = new OutputStreamWriter(is, "UTF-8");
@@ -74,17 +76,25 @@ public class ActionPotential_Analyzer implements Serializable{
                 double amplitude = amp.getAmplitude();
                 double ap_width = 0;
                 
+                
                 if(ap_method.equals("threshold")){    
                     ap_width = sd.calc_APwidth_THRESH(threshold, voltage_trace, time_trace);
                 }else if(ap_method.equals("mean_spike_height")){
                     ap_width = sd.calc_APwidth_MSH(voltage_trace, time_trace, threshold);
                 }
 
+                mean_ap_width = mean_ap_width + ap_width;
+                System.out.println("mean action potential width "+ mean_ap_width);
                 write_to_textfile(outfile, file_number, event_number, amplitude, ap_width);
-                
+                all_events ++;
+                System.out.println("number of all traces  "+ all_events);
             }
             
         }
+
+         mean_ap_width = mean_ap_width/all_events;
+         write_to_textfile(outfile, 0, 0, 0, mean_ap_width);
+         System.out.println("mean action potential width "+ mean_ap_width);
     }
 
     //wie soll der aufbau meiner textdatei sein? 
